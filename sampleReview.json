@@ -1,0 +1,63 @@
+{
+    "updated": [
+        "2016-01-22T21:28:00-07:00"
+    ],
+    "id": [
+        "1320813869"
+    ],
+    "title": [
+        "Was my favorite!"
+    ],
+    "content": [
+        {
+            "_": "This has been my daily reading...the font was easy the layout inviting and I was able to send it to friends in need of encouragement . Now the font too small and the layout looks like a newspaper article.....Please change!\nAdd to the above: the wrong day is highlighted..the app is one day ahead.\nStill the wrong day....no improvement in app.",
+            "$": {
+                "type": "text"
+            }
+        },
+        {
+            "_": "<table border=\"0\" width=\"100%\">\n    <tr>\n        <td>\n            <table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\n                <tr valign=\"top\" align=\"left\">\n                    \n                    \n                    \t<td width=\"100%\">\n                    \n                        <b><a href=\"https://itunes.apple.com/us/app/jesus-calling-devotional-by/id444553118?mt=8&uo=2\">Was my favorite!</a></b><br/>\n                        \n                        \n                        \n                        \n\n                        \n\n                       <font size=\"2\" face=\"Helvetica,Arial,Geneva,Swiss,SunSans-Regular\">\n\t\t\t\t\t\t\n                        </font>\n                    </td>\n                </tr>\n            </table>\n        </td>\n    </tr>\n    <tr>\n        <td>\n            \n                <font size=\"2\" face=\"Helvetica,Arial,Geneva,Swiss,SunSans-Regular\"><br/>This has been my daily reading...the font was easy the layout inviting and I was able to send it to friends in need of encouragement . Now the font too small and the layout looks like a newspaper article.....Please change!<br/>Add to the above: the wrong day is highlighted..the app is one day ahead.<br/>Still the wrong day....no improvement in app.</font><br/>\n            \n            \n            \n        </td>\n    </tr>\n</table>\n",
+            "$": {
+                "type": "html"
+            }
+        }
+    ],
+    "im:contentType": [
+        {
+            "$": {
+                "term": "Application",
+                "label": "Application"
+            }
+        }
+    ],
+    "im:voteSum": [
+        "0"
+    ],
+    "im:voteCount": [
+        "0"
+    ],
+    "im:rating": [
+        "1"
+    ],
+    "im:version": [
+        "1.7"
+    ],
+    "author": [
+        {
+            "name": [
+                "REV38"
+            ],
+            "uri": [
+                "https://itunes.apple.com/us/reviews/id162931862"
+            ]
+        }
+    ],
+    "link": [
+        {
+            "$": {
+                "rel": "related",
+                "href": "https://itunes.apple.com/us/review?id=444553118&type=Purple%20Software"
+            }
+        }
+    ]
+}
