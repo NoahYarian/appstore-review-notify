@@ -9,9 +9,28 @@ var async = require("async");
 var mongoose = require('mongoose');
 var nodemailer = require('nodemailer');
 
+var Review = require('./models/Review');
+var Config = require('./models/Config');
+
 var localCopy = [];
-var report;
-var lastUpdated = new Date(0);
+var localConfig;
+var report,
+    lastUpdated;
+
+// per-user mailing
+// if this runs every 5 minutes, how can this get the last updated time?
+
+// var config = new Config();
+
+//   config
+//     .save(function (err, review, numAffected) {
+//       if (err) return console.error(err);
+//     })
+//     .then(function() {
+
+//     });
+
+
 
 // set up nodemailer
 ////////////////////
@@ -38,9 +57,37 @@ var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
   console.log("mongoose is connected");
+
+  // lastUpdated = mongoose.get('updated');
+  // console.log("lastUpdated: ", lastUpdated);
+
+  Config.find(function (err, configs) {
+    if (err) return console.error(err);
+    if (configs.length === 0) {
+      console.log("configs.length === 0");
+      var freshConfig = new Config({'updated': new Date(0)});
+
+      freshConfig
+        .save(function (err, freshConfig, numAffected) {
+          if (err) return console.error(err);
+        })
+        .then(function() {
+          localConfig = freshConfig;
+          configIsLoaded();
+        });
+    } else {
+      console.log("configs: ", configs);
+      localConfig = configs[configs.length-1];
+      configIsLoaded();
+    }
+  });
 });
 
-var Review = require('./models/Review');
+function configIsLoaded() {
+
+  lastUpdated = localConfig.updated;
+  console.log("lastUpdated: ", lastUpdated);
+}
 
 
 
@@ -54,13 +101,24 @@ iTunesAppReviews.getReviews(appId, country, pageNum);
 
 // success
 iTunesAppReviews.on('data', function(reviewsArr) {
-  for (var i = 0, review; i < reviewsArr.length; i++) {
-    review = parseReview(reviewsArr[i]);
+  var filteredReviewsArr = iTunesAppReviews.filterByVersion(reviewsArr, '1.7');
+  report = iTunesAppReviews.report(filteredReviewsArr);
+
+  var dateFilteredArr = [];
+  // var lastUpdated = new Date('2016-01-25 7:10:00 PM').getTime();
+  console.log("lastUpdated: ", lastUpdated);
+
+  for (var i = 0, review, date; i < filteredReviewsArr.length; i++) {
+    review = filteredReviewsArr[i];
+    console.log(review.updated);
+    date = new Date(review.updated[0]).getTime();
+    if (date > lastUpdated) {
+      console.log('push it!');
+      dateFilteredArr.push(review);
+    }
   }
-  report = iTunesAppReviews.report(reviewsArr);
-  console.log(report);
-  saveReviewsToDb(reviewsArr);
-  // console.log(JSON.stringify(reviewsArr, null, 4));
+  console.log("dateFilteredArr: ", dateFilteredArr);
+  saveReviewsToDb(dateFilteredArr);
 });
 
 // failure
@@ -77,20 +135,18 @@ function emailNoah(reviews) {
   messageText += 'There are ' + reviews.length + ' reviews here for you:\n\n';
   messageText += report;
 
-  var messageHtml = '';
+  // var messageHtml = '';
 
-  for (var i = 0; i < reviews.length; i++) {
-    messageHtml += reviews[i].htmlString;
-  }
-
+  // for (var i = 0; i < reviews.length; i++) {
+  //   messageHtml += reviews[i].htmlString;
+  // }
 
   // setup e-mail data with unicode symbols
   var mailOptions = {
       from: 'Yo Momma 💋 <Noah@NoahYarian.com>', // sender address
       to: 'noah@noahyarian.com', // list of receivers
       subject: 'Hello ✔', // Subject line
-      text: messageText, // plaintext body
-      html: messageHtml
+      text: messageText // plaintext body
   };
 
   // console.log('totally could have sent this email:');
@@ -107,11 +163,24 @@ function emailNoah(reviews) {
 }
 
 function afterSavingAllToDb() {
+  console.log('done saving reviews to DB');
+  console.log(localConfig);
+
+  var freshConfig = new Config({'updated': new Date()});
+
+  freshConfig
+    .save(function (err, localConfig, numAffected) {
+      if (err) return console.error(err);
+    })
+    .then(function() {
+      console.log('done saving config to DB');
+    });
+
   emailNoah(localCopy);
 }
 
 function afterSavingEachToDb() {
-  console.log("no error when saving review to DB");
+  // console.log("no error when saving review to DB");
   // for (var i = 0, review; i < localCopy.length; i++) {
   //   review = localCopy[i];
     // if (review.updated.getTime() > lastUpdated.getTime()) {
@@ -139,9 +208,9 @@ function saveReviewsToDb(reviewsArr) {
       .then(function() {
         afterSavingEachToDb();
         saveCount++;
-        console.log("I'm number " + saveCount);
+        // console.log("I'm number " + saveCount);
         if (saveCount === totalCount) {
-          console.log("I'm last!");
+          // console.log("I'm last!");
           afterSavingAllToDb();
         }
       });
@@ -151,7 +220,7 @@ function saveReviewsToDb(reviewsArr) {
 
 ///////////////////////////////
 function parseReview(review) {
-  console.log(review);
+  // console.log(review);
   return {
     updated: new Date(review.updated),
     reviewId: review.id,
